@@ -12,6 +12,8 @@ def main(args):
     if args.gui:
         app = gui.create()
         app.populate_genres(helper.get_genres(books))
+        app._helper = helper
+        app._books = books
         app.mainloop()
         return 0
 
