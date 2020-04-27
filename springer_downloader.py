@@ -7,6 +7,7 @@ import sys
 import helper
 import gui
 
+
 def main(args):
     books = helper.get_table(args.output_folder, force=args.force)
     if args.gui:
@@ -85,9 +86,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--title", default="", help="Downloads only books contain argument in title"
     )
-    parser.add_argument(
-        "--gui", action="store_true", help="Enables gui mode"
-    )
+    parser.add_argument("--gui", action="store_true", help="Enables gui mode")
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Enables verbose mode"
     )

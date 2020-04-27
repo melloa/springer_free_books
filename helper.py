@@ -8,6 +8,7 @@ GENRE_HEADER = "English Package Name"
 DEFAULT_TABLE_NAME = "Free+English+textbooks.xlsx"
 TABLE_URL = "https://resource-cms.springernature.com/springer-cms/rest/v1/content/17858272/data/v4"
 MAX_PATH_LENGTH = 145
+STOP_FLAG = False
 REPLACEMENTS = {
     "/": "-",
     "\\": "-",
@@ -76,6 +77,7 @@ def download_books(
     epub=True,
     confirm_download=False,
     verbose=False,
+    callback=tqdm.tqdm
 ):
     books = books[
         [
@@ -87,13 +89,13 @@ def download_books(
             "English Package Name",
         ]
     ].values
-    books = [b for b in books if selected_genre in b[5]]
-    books = [b for b in books if selected_title in b[1]]
+    books = [b for b in books if b[5] in selected_genre]
+    books = [b for b in books if b[1] in selected_title]
     count = 0
-    for url, title, author, edition, isbn, genre in tqdm.tqdm(
-        books, disable=(verbose or confirm_download)
-    ):
+    for url, title, author, edition, isbn, genre in callback(books, disable=(verbose or confirm_download)):
         count += 1
+        if STOP_FLAG:
+            break
         if confirm_download:
             res = ""
             while not res or res[0] not in ("y", "n"):
