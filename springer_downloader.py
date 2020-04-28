@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-
+import threading
 import argparse
 import sys
 
@@ -15,7 +15,7 @@ def main(args):
         app.populate_genres(helper.get_genres(books))
         app._helper = helper
         app._books = books
-        app.mainloop()
+        threading.Thread(app.mainloop()).start()
         return 0
 
     if args.list_genres:

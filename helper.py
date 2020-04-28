@@ -1,7 +1,7 @@
+from tqdm import tqdm
 import requests
 import pandas
 import shutil
-import tqdm
 import os
 
 GENRE_HEADER = "English Package Name"
@@ -77,7 +77,8 @@ def download_books(
     epub=True,
     confirm_download=False,
     verbose=False,
-    callback=tqdm.tqdm
+    progressbar=None,
+    label=None,
 ):
     books = books[
         [
@@ -89,26 +90,27 @@ def download_books(
             "English Package Name",
         ]
     ].values
-    books = [b for b in books if b[5] in selected_genre]
-    books = [b for b in books if b[1] in selected_title]
+    books = [b for b in books if selected_genre in b[5]]
+    books = [b for b in books if selected_title in b[1]]
     count = 0
-    for url, title, author, edition, isbn, genre in callback(books, disable=(verbose or confirm_download)):
+
+    disable_tqdm = verbose or confirm_download or progressbar
+    for url, title, author, edition, isbn, genre in tqdm(books, disable=disable_tqdm):
         count += 1
         if STOP_FLAG:
             break
+        if label:
+            label.set("Downloading '{}'".format(title))
         if confirm_download:
-            res = ""
-            while not res or res[0] not in ("y", "n"):
-                res = input(
-                    "Downloading '{}' : ({}/{}) Continue? (y/n) ".format(
-                        title, count, len(books)
-                    )
-                )
-
-            if "n" == res[0]:
-                continue
+            _prompt("Downloading '{}' : ({}/{}) Continue? (y/n) ".format(
+                title, count, len(books)
+            ))
+            
         if verbose:
             print("Downloading '{}' : ({}/{})".format(title, count, len(books)))
+        if progressbar:
+            progressbar.set(count)
+
         path = make_directories(os.path.join(output_folder, genre))
         request = requests.get(url)
         if request.status_code != 200:
@@ -130,6 +132,8 @@ def download_books(
             filepath = os.path.join(path, bookname + ".epub")
             _download_book(epub_url, filepath, force=force)
 
+    if label:
+        label.set("Complete.")
 
 def _download_book(url, bookpath, force=False):
     if not os.path.exists(bookpath) or force:
@@ -140,6 +144,13 @@ def _download_book(url, bookpath, force=False):
                 shutil.copyfileobj(req.raw, out_file)
                 out_file.close()
             shutil.move(tmp_file, bookpath)
+
+def _prompt(message):
+    response = ""
+    while not response or response[0] not in ("y", "n"):
+        response = input(message)
+
+    return response[0] == "y"
 
 
 def compose_bookname(title, author, edition, isbn):
