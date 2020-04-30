@@ -102,10 +102,12 @@ def download_books(
         if label:
             label.set("Downloading '{}'".format(title))
         if confirm_download:
-            _prompt("Downloading '{}' : ({}/{}) Continue? (y/n) ".format(
-                title, count, len(books)
-            ))
-            
+            _prompt(
+                "Downloading '{}' : ({}/{}) Continue? (y/n) ".format(
+                    title, count, len(books)
+                )
+            )
+
         if verbose:
             print("Downloading '{}' : ({}/{})".format(title, count, len(books)))
         if progressbar:
@@ -135,6 +137,7 @@ def download_books(
     if label:
         label.set("Complete.")
 
+
 def _download_book(url, bookpath, force=False):
     if not os.path.exists(bookpath) or force:
         with requests.get(url, stream=True) as req:
@@ -144,6 +147,7 @@ def _download_book(url, bookpath, force=False):
                 shutil.copyfileobj(req.raw, out_file)
                 out_file.close()
             shutil.move(tmp_file, bookpath)
+
 
 def _prompt(message):
     response = ""

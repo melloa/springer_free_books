@@ -2,7 +2,6 @@ from tkinter.ttk import Progressbar, Frame, Label, Entry, Checkbutton, Button
 import tkinter as tk
 import threading
 import logging
-import os
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
