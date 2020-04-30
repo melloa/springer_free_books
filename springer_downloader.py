@@ -1,14 +1,25 @@
 #!/usr/bin/env python
 
-
+import threading
 import argparse
 import sys
+import os
 
 import helper
+import gui
 
 
 def main(args):
-    books = helper.get_table(args.output_folder, force=args.force)
+    output_folder = os.path.expanduser(args.output_folder)
+    books = helper.get_table(output_folder, force=args.force)
+    if args.gui:
+        app = gui.create()
+        app.set_output_folder(output_folder)
+        app.populate_genres(helper.get_genres(books))
+        app._helper = helper
+        app._books = books
+        threading.Thread(app.mainloop()).start()
+        return 0
 
     if args.list_genres:
         print("\nAvailable genre options:")
@@ -47,6 +58,7 @@ def main(args):
     )
 
     print("\nFinish downloading.")
+    return 0
 
 
 if __name__ == "__main__":
@@ -77,6 +89,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--title", default="", help="Downloads only books contain argument in title"
     )
+    parser.add_argument("--gui", action="store_true", help="Enables gui mode")
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Enables verbose mode"
     )
