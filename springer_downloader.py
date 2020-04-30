@@ -3,15 +3,18 @@
 import threading
 import argparse
 import sys
+import os
 
 import helper
 import gui
 
 
 def main(args):
-    books = helper.get_table(args.output_folder, force=args.force)
+    output_folder = os.path.expanduser(args.output_folder)
+    books = helper.get_table(output_folder, force=args.force)
     if args.gui:
         app = gui.create()
+        app.set_output_folder(output_folder)
         app.populate_genres(helper.get_genres(books))
         app._helper = helper
         app._books = books

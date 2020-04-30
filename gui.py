@@ -35,7 +35,6 @@ class Application(Frame):
 
         _create_label(self, "Output Folder:", (0, 0))
         self.output_path = Entry(self)
-        self.output_path.insert(tk.END, os.getcwd())
         self.output_path.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(0, 15))
         _create_label(self, "Available Genres:", (2, 0))
         _create_label(self, "Books to Download:", (2, 1))
@@ -50,13 +49,13 @@ class Application(Frame):
             self._add_titles_to_listbox()
 
         self.genres.bind("<<ListboxSelect>>", on_genre_select)
-        self.genres['height'] = 20
-        self.genres['width'] = 30
+        self.genres["height"] = 20
+        self.genres["width"] = 30
         self.genres.grid(row=3, column=0, padx=(0, 10))
 
         self.books = tk.Listbox(self)
-        self.books['height'] = 20
-        self.books['width'] = 30
+        self.books["height"] = 20
+        self.books["width"] = 30
         self.books.grid(row=3, column=1, padx=(10, 0))
 
         self._pdf = tk.IntVar(value=1)
@@ -79,6 +78,10 @@ class Application(Frame):
         self._download_btn.set("Download")
         db.grid(row=7, column=0, columnspan=2, pady=10)
         LOG.info("All widgets created.")
+
+    def set_output_folder(self, path):
+        if self.output_path:
+            self.output_path.insert(tk.END, path)
 
     def populate_genres(self, genres):
         self._genre_mapping = genres
